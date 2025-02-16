@@ -1,0 +1,15 @@
+{
+  "name": "Codex Book Management",
+  "short_name": "Codex",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#F4EBD0",
+  "theme_color": "#4F6F52",
+  "icons": [
+    {
+      "src": "icons/favicon.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    }
+  ]
+}
