@@ -4,10 +4,13 @@ const FILES_TO_CACHE = [
   "/codex/index.html",
   "/codex/styles/base.css",
   "/codex/styles/header.css",
+  "/codex/styles/main.css",
   "/codex/styles/footer.css",
+  "/codex/styles/media-queries.css",
   "/codex/icons/favicon.png",
   "/codex/images/paper.png",
   "/codex/images/codex.png",
+  "/codes/scripts/app.js",
   "/codex/manifest.json",
 ];
 

@@ -5,4 +5,84 @@ header {
   background: #f0f0f0;
   flex-direction: row;
   gap: 1rem;
+  padding: 5px;
+}
+
+#burger-menu {
+  position: absolute;
+  right: 20px;
+  font-size: 30px;
+  background: none;
+  border: 2px solid #7f6639;
+  border-radius: 10px;
+  color: #7f6639;
+  cursor: pointer;
+  padding: 5px;
+  z-index: 1000;
+}
+
+#side-menu {
+  position: fixed;
+  top: 0;
+  right: -250px;
+  width: 250px;
+  height: 100%;
+  background: #1b3d2f;
+  color: white;
+  padding-top: 60px;
+  transition: right 0.3s ease-in-out;
+  z-index: 1000;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#side-menu ul {
+  list-style: none;
+  padding: 0;
+}
+
+#side-menu ul li {
+  padding: 15px;
+}
+
+#side-menu ul li a {
+  color: white;
+  text-decoration: none;
+}
+
+#side-menu ul li a:hover {
+  text-decoration: underline;
+}
+
+#side-menu.open {
+  right: 0;
+}
+
+#close-menu {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 4rem;
+  color: white;
+  cursor: pointer;
+}
+
+#menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: 900;
+}
+
+#menu-overlay.show {
+  display: block;
 }

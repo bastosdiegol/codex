@@ -1,0 +1,20 @@
+/* 
+ * Responsive Design
+ * Mobile First Approach
+ * PC: 1024px and above
+ * Tablet: 768px - 1023px
+ */
+@media (min-width: 1024px) {
+  #book-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  #book-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}

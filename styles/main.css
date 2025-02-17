@@ -1,0 +1,40 @@
+main {
+  position: relative;
+  padding-bottom: 60px;
+}
+
+.book-card {
+  display: flex;
+  position: relative;
+  border: 1px solid #ddd;
+  background: white;
+  border-top-right-radius: 30px;
+  border-bottom-left-radius: 30px;
+  margin: 10px 0;
+}
+
+.book-img img {
+  width: 100px;
+  height: 100%;
+  border: 1px solid #ddd;
+  border-bottom-left-radius: 30px;
+}
+
+.book-info {
+  flex: 1;
+  padding: 10px;
+}
+
+.book-info:first-child {
+  padding-bottom: 10px;
+}
+
+.book-rating {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  background-color: #7f6639;
+  color: #fff;
+  padding: 2px 5px;
+  border-top-left-radius: 20px;
+}

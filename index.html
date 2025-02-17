@@ -8,14 +8,30 @@
     <link rel="manifest" href="./manifest.json" />
     <link rel="stylesheet" href="./styles/base.css" />
     <link rel="stylesheet" href="./styles/header.css" />
+    <link rel="stylesheet" href="./styles/main.css" />
     <link rel="stylesheet" href="./styles/footer.css" />
+    <link rel="stylesheet" href="./styles/media-queries.css" />
+    <script src="./scripts/app.js"></script>
   </head>
   <body>
     <header>
       <img src="./images/codex.png" alt="Codex Logo" />
       <h1>Codex</h1>
+      <button id="burger-menu" aria-label="Open Menu">&#9776;</button>
+      <nav id="side-menu">
+        <button id="close-menu" aria-label="Close Menu">&times;</button>
+        <ul>
+          <li><a href="#">Add Book</a></li>
+          <li><a href="#">Order by Author</a></li>
+          <li><a href="#">Order by Status</a></li>
+          <li><a href="#">Order by Rating</a></li>
+        </ul>
+      </nav>
     </header>
-    <main></main>
+    <div id="menu-overlay"></div>
+    <main>
+      <section id="book-list"></section>
+    </main>
     <footer>
       <p>
         <strong>Developed by:</strong>
