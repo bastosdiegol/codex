@@ -30,7 +30,11 @@ p,
 strong,
 a,
 span,
-button {
+button,
+input,
+label,
+select,
+option {
   font-size: 1.8rem;
 }
 
