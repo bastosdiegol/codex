@@ -1,0 +1,2 @@
+const e=["/codex/","/codex/index.html","/codex/styles/base.css","/codex/styles/header.css","/codex/styles/main.css","/codex/styles/footer.css","/codex/styles/media-queries.css","/codex/icons/favicon.png","/codex/images/paper.png","/codex/images/codex.png","/codes/scripts/app.js","/codex/manifest.json"];self.addEventListener("install",s=>{s.waitUntil(caches.open("codex-pwa-cache-v1").then(s=>s.addAll(e)))}),self.addEventListener("fetch",e=>{e.respondWith(caches.match(e.request).then(s=>s||fetch(e.request)))});
+//# sourceMappingURL=service-worker.612cd456.js.map
