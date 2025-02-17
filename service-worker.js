@@ -3,8 +3,11 @@ const FILES_TO_CACHE = [
   "/codex/",
   "/codex/index.html",
   "/codex/styles/base.css",
+  "/codex/styles/header.css",
+  "/codex/styles/footer.css",
   "/codex/icons/favicon.png",
   "/codex/images/paper.png",
+  "/codex/images/codex.png",
   "/codex/manifest.json",
 ];
 
