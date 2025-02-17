@@ -229,25 +229,45 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const bookId = document.getElementById("book-id").value;
-    if (bookId) {
-      const bookIndex = books.findIndex((book) => book.id == bookId);
+    let cover = document.getElementById("book-cover").src;
+    let title = document.getElementById("book-title").value;
+    let author = document.getElementById("book-author").value;
+    let genre = document.getElementById("book-genre").value;
+    let progress = document.getElementById("book-progress").value;
+    let status = document.getElementById("book-status").value;
+    let rating = document.getElementById("book-rating").value;
+
+    if (bookId.value !== "") {
+      const bookIndex = books.findIndex((book) => book.id == bookId.value);
       if (bookIndex !== -1) {
         books[bookIndex] = {
           id: bookId,
-          cover: document.getElementById("book-cover").src,
-          title: document.getElementById("book-title").value,
-          author: document.getElementById("book-author").value,
-          genre: document.getElementById("book-genre").value,
-          progress: document.getElementById("book-progress").value,
-          status: document.getElementById("book-status").value,
-          rating: document.getElementById("book-rating").value,
+          cover: cover,
+          title: title,
+          author: author,
+          genre: genre,
+          progress: progress,
+          status: status,
+          rating: rating,
         };
-        displayBooks();
-        bookForm.classList.remove("show");
-        bookList.classList.remove("hide");
       }
+    } else {
+      const newBook = {
+        id: books.length + 1,
+        cover: cover,
+        title: title,
+        author: author,
+        genre: genre,
+        progress: progress,
+        status: status,
+        rating: rating,
+      };
+      books.push(newBook);
     }
+
+    displayBooks();
+    bookForm.classList.remove("show");
+    bookList.classList.remove("hide");
   });
 
   // Close Form Button Functionality
