@@ -1,0 +1,6 @@
+# Node.js Dependencies
+node_modules
+package-lock.json
+
+# Parcel Cache
+.parcel-cache
