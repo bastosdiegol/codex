@@ -229,7 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    let cover = document.getElementById("book-cover").src;
+    let cover = document.getElementById("book-cover").value;
     let title = document.getElementById("book-title").value;
     let author = document.getElementById("book-author").value;
     let genre = document.getElementById("book-genre").value;
@@ -237,11 +237,13 @@ document.addEventListener("DOMContentLoaded", () => {
     let status = document.getElementById("book-status").value;
     let rating = document.getElementById("book-rating").value;
 
+    let savedBook;
+
     if (bookId.value !== "") {
       const bookIndex = books.findIndex((book) => book.id == bookId.value);
       if (bookIndex !== -1) {
         books[bookIndex] = {
-          id: bookId,
+          id: bookId.value,
           cover: cover,
           title: title,
           author: author,
@@ -250,6 +252,8 @@ document.addEventListener("DOMContentLoaded", () => {
           status: status,
           rating: rating,
         };
+
+        savedBook = books[bookIndex];
       }
     } else {
       const newBook = {
@@ -263,11 +267,24 @@ document.addEventListener("DOMContentLoaded", () => {
         rating: rating,
       };
       books.push(newBook);
+
+      savedBook = newBook;
     }
 
     displayBooks();
     bookForm.classList.remove("show");
     bookList.classList.remove("hide");
+
+    const savedBookCard = document.getElementById(savedBook.id);
+    console.log("Saved Book ID: ", savedBook.id);
+    console.log("Saved Book Card: ", savedBookCard);
+
+    if (savedBookCard) {
+      savedBookCard.classList.add("highlight");
+      savedBookCard.focus();
+      savedBookCard.scrollIntoView({ behavior: "smooth" });
+      setTimeout(() => savedBookCard.classList.remove("highlight"), 1500);
+    }
   });
 
   // Close Form Button Functionality
