@@ -11,7 +11,8 @@
     <link rel="stylesheet" href="./styles/main.css" />
     <link rel="stylesheet" href="./styles/footer.css" />
     <link rel="stylesheet" href="./styles/media-queries.css" />
-    <script src="./scripts/app.js"></script>
+    <script type="module" src="./scripts/firebase.js"></script>
+    <script type="module" src="./scripts/app.js"></script>
   </head>
   <body>
     <header>
@@ -90,15 +91,5 @@
         >
       </p>
     </footer>
-    <script>
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker
-          .register("/codex/service-worker.js", {
-            scope: "/codex/",
-          })
-          .then((reg) => console.log("Service Worker Registered"))
-          .catch((err) => console.error("Service Worker Error:", err));
-      }
-    </script>
   </body>
 </html>
