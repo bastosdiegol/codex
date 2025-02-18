@@ -11,7 +11,7 @@ if ("serviceWorker" in navigator) {
   s.register(sw.href, {
     scope: "/codex/",
   })
-    .then((_) =>
+    .then(() =>
       console.log(
         "Service Worker Registered for scope:",
         sw.href,
