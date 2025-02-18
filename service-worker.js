@@ -11,6 +11,7 @@ const FILES_TO_CACHE = [
   "/codex/images/paper.png",
   "/codex/images/codex.png",
   "/codes/scripts/app.js",
+  "/codes/scripts/firebase.js",
   "/codex/manifest.json",
 ];
 
