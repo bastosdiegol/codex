@@ -1,3 +1,10 @@
+import {
+  getBooksFromFirestore,
+  addBookToFirestore,
+  updateBookInFirestore,
+  removeBookFromFirestore,
+} from "./firebase.js";
+
 const sw = new URL("../service-worker.js", import.meta.url);
 if ("serviceWorker" in navigator) {
   const s = navigator.serviceWorker;
@@ -15,7 +22,9 @@ if ("serviceWorker" in navigator) {
     .catch((err) => console.error("Service Worker Error:", err));
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  const books = [];
+
   const bookList = document.getElementById("book-list");
   const bookForm = document.getElementById("book-form");
   const menu = document.getElementById("side-menu");
@@ -43,80 +52,12 @@ document.addEventListener("DOMContentLoaded", () => {
   closeButton.addEventListener("click", closeMenu);
   overlay.addEventListener("click", closeMenu);
 
-  // Display Books Functionality
-  let books = [
-    {
-      id: 1,
-      cover:
-        "https://www.royalroadcdn.com/public/covers-full/21220-mother-of-learning.jpg?time=1637247458",
-      title: "Mother of Learning",
-      author: "nobody103, Domagoj Kurmaić",
-      genre: "Fantasy, Magic, Time Travel",
-      progress: 100,
-      status: "Read",
-      rating: 5,
-    },
-    {
-      id: 2,
-      cover: "",
-      title: "A Practical Guide to Sorcery",
-      author: "Azalea Ellis",
-      genre: "Fantasy, Magic, Gender Bender",
-      progress: 90,
-      status: "Reading",
-      rating: 4,
-    },
-    {
-      id: 3,
-      cover: "",
-      title: "Os Sete",
-      author: "André Vianco",
-      genre: "Horror, Vampires",
-      progress: 100,
-      status: "Read",
-      rating: 5,
-    },
-    {
-      id: 4,
-      cover: "",
-      title: "Super Supportive",
-      author: "Sleyca",
-      genre: "Super Heroes, Slice of Life",
-      progress: 90,
-      status: "Dropped",
-      rating: 3,
-    },
-    {
-      id: 5,
-      cover: "",
-      title: "The Path of Ascension",
-      author: "C. Mantis",
-      genre: "Fantasy, Magic, LitRPG",
-      progress: 100,
-      status: "Read",
-      rating: 5,
-    },
-    {
-      id: 6,
-      cover: "",
-      title: "Dungeon Crawler Carl",
-      author: "Matt Dinniman",
-      genre: "LitRPG, Apocalypse, Dungeon",
-      progress: 100,
-      status: "Read",
-      rating: 4,
-    },
-    {
-      id: 7,
-      cover: "",
-      title: "The Hedge Wizard",
-      author: "Alex Maher",
-      genre: "Fantasy, Magic, Adventure",
-      progress: 100,
-      status: "Read",
-      rating: 5,
-    },
-  ];
+  // Load Books for the first time
+  try {
+    await getBooksFromFirestore(books);
+  } catch (error) {
+    console.error("Error getting books from Firestore: ", error);
+  }
 
   /**
    * Display Books
@@ -150,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const bookAuthor = document.createElement("p");
       bookAuthor.innerHTML = `<strong>Author:</strong> ${book.author}`;
       const bookGenre = document.createElement("p");
-      bookGenre.innerHTML = `<strong>Genre:</strong> ${book.genre}`;
+      bookGenre.innerHTML = `<strong>Genre:</strong> ${book.genre.join(", ")}`;
       const bookStatus = document.createElement("p");
       bookStatus.innerHTML = `<strong>Status:</strong> ${book.status}`;
       const bookProgress = document.createElement("p");
@@ -239,20 +180,35 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Save Book Button Functionality
-  saveBook.addEventListener("click", () => {
+  saveBook.addEventListener("click", async () => {
     const form = document.getElementById("book-management-form");
     if (!form.checkValidity()) {
       form.reportValidity();
       return;
     }
 
-    let cover = document.getElementById("book-cover").value;
-    let title = document.getElementById("book-title").value;
-    let author = document.getElementById("book-author").value;
-    let genre = document.getElementById("book-genre").value;
-    let progress = document.getElementById("book-progress").value;
-    let status = document.getElementById("book-status").value;
-    let rating = document.getElementById("book-rating").value;
+    const cover = sanitizeInput(
+      document.getElementById("book-cover").value.trim()
+    );
+    const title = sanitizeInput(
+      document.getElementById("book-title").value.trim()
+    );
+    const author = sanitizeInput(
+      document.getElementById("book-author").value.trim()
+    );
+    const genre = document
+      .getElementById("book-genre")
+      .value.split(",")
+      .map((item) => sanitizeInput(item.trim()));
+    const progress = sanitizeInput(
+      document.getElementById("book-progress").value.trim()
+    );
+    const status = sanitizeInput(
+      document.getElementById("book-status").value.trim()
+    );
+    const rating = sanitizeInput(
+      document.getElementById("book-rating").value.trim()
+    );
 
     let savedBook;
 
@@ -270,11 +226,16 @@ document.addEventListener("DOMContentLoaded", () => {
           rating: rating,
         };
 
+        try {
+          await updateBookInFirestore(books[bookIndex]);
+        } catch (error) {
+          console.error("Error updating book in Firestore: ", error);
+        }
+
         savedBook = books[bookIndex];
       }
     } else {
       const newBook = {
-        id: books.length + 1,
         cover: cover,
         title: title,
         author: author,
@@ -284,7 +245,11 @@ document.addEventListener("DOMContentLoaded", () => {
         rating: rating,
       };
       books.push(newBook);
-
+      try {
+        books[books.length - 1].id = await addBookToFirestore(newBook);
+      } catch (error) {
+        console.error("Error adding book to Firestore: ", error);
+      }
       savedBook = newBook;
     }
 
@@ -293,8 +258,6 @@ document.addEventListener("DOMContentLoaded", () => {
     bookList.classList.remove("hide");
 
     const savedBookCard = document.getElementById(savedBook.id);
-    console.log("Saved Book ID: ", savedBook.id);
-    console.log("Saved Book Card: ", savedBookCard);
 
     if (savedBookCard) {
       savedBookCard.classList.add("highlight");
@@ -320,7 +283,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }" entry?`
       )
     ) {
-      books = books.filter((book) => book.id != bookId.value);
+      const bookIndex = books.findIndex((book) => book.id == bookId.value);
+      if (bookIndex !== -1) {
+        try {
+          removeBookFromFirestore(bookId.value);
+        } catch (error) {
+          console.error("Error removing book from Firestore: ", error);
+        }
+        books.splice(bookIndex, 1);
+      }
       displayBooks();
       bookForm.classList.remove("show");
       bookList.classList.remove("hide");
@@ -337,3 +308,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // First Display of Books on Page Load
   displayBooks();
 });
+
+function sanitizeInput(input) {
+  const div = document.createElement("div");
+  div.textContent = input;
+  return div.innerHTML;
+}
