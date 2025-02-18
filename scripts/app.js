@@ -38,14 +38,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   const bookId = document.getElementById("book-id");
 
   // Burguer Menu Functionality
+  toggleMenuTabIndex(false);
   function openMenu() {
     menu.classList.add("open");
     overlay.classList.add("show");
+    toggleMenuTabIndex(true);
+    trapFocusWithinMenu();
   }
-
   function closeMenu() {
     menu.classList.remove("open");
     overlay.classList.remove("show");
+    toggleMenuTabIndex(false);
   }
 
   burgerMenu.addEventListener("click", openMenu);
@@ -61,7 +64,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   /**
    * Display Books
-   * Renders each book as Artciles inside Book-List Section.
+   * Renders each book as Articles inside Book-List Section.
    * @returns {void}
    */
   function displayBooks() {
@@ -72,6 +75,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       bookCard.id = book.id;
       bookCard.classList.add("book-card");
       bookCard.setAttribute("aria-labelledby", `book-title-${book.id}`);
+      bookCard.tabIndex = 0;
+
       // Book image container
       if (book.cover !== "") {
         const bookImgDiv = document.createElement("div");
@@ -82,6 +87,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         bookImgDiv.appendChild(bookImg);
         bookCard.appendChild(bookImgDiv);
       }
+
       // Book info container
       const bookInfoDiv = document.createElement("div");
       bookInfoDiv.classList.add("book-info");
@@ -103,6 +109,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         `Rating: ${book.rating} out of 5 stars`
       );
       bookRatingSpan.innerHTML = renderStars(book.rating);
+
       // Append all info elements
       bookInfoDiv.appendChild(bookTitle);
       bookInfoDiv.appendChild(bookAuthor);
@@ -112,7 +119,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       // Append info to article
       bookCard.appendChild(bookInfoDiv);
       bookCard.appendChild(bookRatingSpan);
-      // Append Article and
+
+      // Append Article to Book List
       bookList.appendChild(bookCard);
     });
   }
@@ -125,6 +133,61 @@ document.addEventListener("DOMContentLoaded", async () => {
   function renderStars(rating) {
     return "&starf;".repeat(rating) + "&star;".repeat(5 - rating);
   }
+
+  // Keyboard Navigation Functionality
+  let currentFocus = null;
+
+  // Focus on the currently focused book card
+  function focusOnBookCard(card) {
+    if (card) {
+      card.classList.add("highlight");
+      card.focus();
+      card.scrollIntoView({ behavior: "smooth" });
+      setTimeout(() => card.classList.remove("highlight"), 1000);
+    }
+  }
+
+  // Keyboard navigation using arrow keys for book cards
+  bookList.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      if (currentFocus === null) {
+        currentFocus = bookList.querySelector(".book-card");
+      } else {
+        const nextCard = currentFocus.nextElementSibling;
+        if (nextCard && nextCard.classList.contains("book-card")) {
+          currentFocus = nextCard;
+        }
+      }
+      focusOnBookCard(currentFocus);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      if (currentFocus === null) {
+        currentFocus = bookList.querySelector(".book-card");
+      } else {
+        const prevCard = currentFocus.previousElementSibling;
+        if (prevCard && prevCard.classList.contains("book-card")) {
+          currentFocus = prevCard;
+        }
+      }
+      focusOnBookCard(currentFocus);
+    } else if (event.key === "Enter" || event.key === " ") {
+      // Trigger opening the form for the focused book card
+      event.preventDefault();
+      if (currentFocus) {
+        const bookId = currentFocus.id;
+        const book = books.find((b) => b.id == bookId);
+        openBookForm(book);
+      }
+    }
+  });
+
+  // Keyboard navigation using tab keys focus
+  bookList.addEventListener("focusin", (event) => {
+    if (event.target && event.target.classList.contains("book-card")) {
+      currentFocus = event.target;
+    }
+  });
 
   // Book Form Functionality
   bookList.addEventListener("click", (event) => {
@@ -304,6 +367,63 @@ document.addEventListener("DOMContentLoaded", async () => {
     openBookForm();
     closeMenu();
   });
+
+  /**
+   * Toggle Menu TabIndex
+   * Adds or removes tabindex attribute to menu links and close button.
+   * @param {boolean} isVisible - Determines if the menu is visible or not
+   * @returns {void}
+   */
+  function toggleMenuTabIndex(isVisible) {
+    const menuLinks = menu.querySelectorAll("nav a");
+    const closeButton = menu.querySelector("#close-menu");
+    menuLinks.forEach((link) => {
+      if (isVisible) {
+        link.setAttribute("tabindex", "0");
+      } else {
+        link.setAttribute("tabindex", "-1");
+      }
+    });
+    if (isVisible) {
+      closeButton.setAttribute("tabindex", "0");
+    } else {
+      closeButton.setAttribute("tabindex", "-1");
+    }
+  }
+
+  /**
+   * Trap Focus Within Menu
+   * Allows for keyboard navigation within the menu.
+   * @returns {void}
+   */
+  function trapFocusWithinMenu() {
+    const menuLinks = menu.querySelectorAll("a");
+    const closeButton = menu.querySelector("#close-menu");
+    const firstLink = menuLinks[0];
+    const lastLink = menuLinks[menuLinks.length - 1];
+
+    menu.addEventListener("keydown", (event) => {
+      if (event.key === "Tab") {
+        if (event.shiftKey) {
+          if (document.activeElement === firstLink) {
+            closeButton.focus();
+            event.preventDefault();
+          } else if (document.activeElement === closeButton) {
+            lastLink.focus();
+            event.preventDefault();
+          }
+        } else {
+          if (document.activeElement === lastLink) {
+            closeButton.focus();
+            event.preventDefault();
+          } else if (document.activeElement === closeButton) {
+            firstLink.focus();
+            event.preventDefault();
+          }
+        }
+      }
+    });
+  }
 
   // First Display of Books on Page Load
   displayBooks();
