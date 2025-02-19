@@ -1,0 +1,54 @@
+/* 
+ * Responsive Design
+ * Mobile First Approach
+ * PC: 1024px and above
+ * Tablet: 768px - 1023px
+ */
+@media (min-width: 768px) {
+  h1 {
+    font-size: 3.6rem;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+  }
+
+  p,
+  strong,
+  a,
+  span,
+  button,
+  input,
+  label,
+  select,
+  option {
+    font-size: 1.4rem;
+  }
+
+  #book-form div:last-child {
+    justify-content: center;
+    gap: 30px;
+  }
+
+  #book-form button {
+    flex: unset;
+    width: auto;
+    min-width: 120px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  #book-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  #book-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+}
