@@ -26,7 +26,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const books = [];
 
   const bookList = document.getElementById("book-list");
-  const bookForm = document.getElementById("book-form");
+  const bookFormSection = document.getElementById("book-form");
+  const bookForm = document.getElementById("book-management-form");
   const menu = document.getElementById("side-menu");
   const overlay = document.getElementById("menu-overlay");
   const burgerMenu = document.getElementById("burger-menu");
@@ -238,13 +239,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       deleteBook.style.display = "none";
     }
 
-    bookForm.classList.add("show");
+    bookFormSection.classList.add("show");
     bookList.classList.add("hide");
   }
 
   // Save Book Button Functionality
-  saveBook.addEventListener("click", async () => {
-    const form = document.getElementById("book-management-form");
+  bookForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const form = event.target;
     if (!form.checkValidity()) {
       form.reportValidity();
       return;
@@ -317,7 +319,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     displayBooks();
-    bookForm.classList.remove("show");
+    bookFormSection.classList.remove("show");
     bookList.classList.remove("hide");
 
     const savedBookCard = document.getElementById(savedBook.id);
@@ -332,7 +334,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Close Form Button Functionality
   closeBookForm.addEventListener("click", () => {
-    bookForm.classList.remove("show");
+    bookFormSection.classList.remove("show");
     bookList.classList.remove("hide");
   });
 
@@ -356,7 +358,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         books.splice(bookIndex, 1);
       }
       displayBooks();
-      bookForm.classList.remove("show");
+      bookFormSection.classList.remove("show");
       bookList.classList.remove("hide");
     }
   });
@@ -427,10 +429,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // First Display of Books on Page Load
   displayBooks();
-});
 
-function sanitizeInput(input) {
-  const div = document.createElement("div");
-  div.textContent = input;
-  return div.innerHTML;
-}
+  /**
+   * Utility function Sanitize Input
+   * Prevents XSS attacks by encoding special characters.
+   * @param {string} input - User input to sanitize
+   * @returns {string} - Sanitized input
+   */
+  function sanitizeInput(input) {
+    const div = document.createElement("div");
+    div.textContent = input;
+    return div.innerHTML;
+  }
+});
