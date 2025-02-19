@@ -1,0 +1,113 @@
+main {
+  position: relative;
+  padding-bottom: 60px;
+}
+
+#book-list.hide {
+  display: none;
+}
+
+.book-card {
+  display: flex;
+  position: relative;
+  border: 1px solid #ddd;
+  background: white;
+  border-top-right-radius: 30px;
+  border-bottom-left-radius: 30px;
+  margin: 10px 0;
+}
+
+.book-img img {
+  width: 130px;
+  height: 100%;
+  border: 1px solid #ddd;
+  border-bottom-left-radius: 30px;
+}
+
+.book-info {
+  flex: 1;
+  padding: 10px;
+}
+
+.book-info:first-child {
+  padding-bottom: 10px;
+}
+
+.book-rating {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  background-color: #7f6639;
+  color: #fff;
+  padding: 2px 5px;
+  border-top-left-radius: 20px;
+}
+
+#book-form {
+  display: none;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+#book-form.show {
+  display: block;
+}
+
+#book-form h2 {
+  margin-bottom: 10px;
+}
+
+#book-form div {
+  margin-bottom: 15px;
+}
+
+#book-form div:last-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#book-form label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+#book-form input,
+#book-form select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#book-form button {
+  flex: 1;
+  min-width: 0;
+  background-color: #7f6639;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#book-form button:hover {
+  background-color: #6b5430;
+}
+
+#delete-book {
+  background-color: #d9534f !important;
+}
+
+#delete-book:hover {
+  background-color: #c9302c !important;
+}
+
+.highlight {
+  background-color: #e5eee2;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
