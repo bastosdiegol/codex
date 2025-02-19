@@ -15,6 +15,21 @@
       "src": "./assets/images/codex.png",
       "sizes": "64x64",
       "type": "image/png"
+    },
+    {
+      "src": "./assets/icons/add-book-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "./assets/icons/sort-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "./assets/icons/logout-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
     }
   ]
 }

@@ -4,6 +4,7 @@ export default [
   {
     languageOptions: {
       globals: {
+        // Browser Globals
         window: "readonly",
         document: "readonly",
         navigator: "readonly",
@@ -11,6 +12,10 @@ export default [
         console: "readonly",
         setTimeout: "readonly",
         confirm: "readonly",
+        // Service Worker Globals
+        self: "readonly",
+        caches: "readonly",
+        fetch: "readonly",
       },
     },
     rules: {
@@ -18,6 +23,6 @@ export default [
       "no-undef": "warn",
     },
     ignores: ["dist/", "docs/", ".parcel-cache/", "node_modules/"],
-    files: ["scripts/*.js"],
+    files: ["assets/**/*.js"],
   },
 ];

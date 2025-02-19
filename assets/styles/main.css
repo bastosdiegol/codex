@@ -95,7 +95,8 @@ main {
   cursor: pointer;
 }
 
-#book-form button:hover {
+#book-form button:hover,
+#sign-in:hover {
   background-color: #6b5430;
 }
 
@@ -110,4 +111,21 @@ main {
 .highlight {
   background-color: #e5eee2;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.sing-in-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#sign-in {
+  min-width: 0;
+  background-color: #7f6639;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
 }

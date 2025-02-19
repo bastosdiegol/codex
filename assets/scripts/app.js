@@ -3,9 +3,29 @@ import {
   addBookToFirestore,
   updateBookInFirestore,
   removeBookFromFirestore,
+  auth,
 } from "./firebase.js";
 
-const sw = new URL("../scripts/service-worker.js", import.meta.url);
+/**
+ * Function to check if a user is authenticated
+ * Redirects to index.html if user is not authenticated
+ * @async
+ */
+function isUserAuthenticated() {
+  return new Promise((resolve, reject) => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        resolve(user);
+      } else {
+        console.log("User is not authenticated");
+        window.location = "index.html";
+        reject("User not authenticated");
+      }
+    });
+  });
+}
+
+const sw = new URL("./service-worker.js", import.meta.url);
 if ("serviceWorker" in navigator) {
   const s = navigator.serviceWorker;
   s.register(sw.href, {
@@ -23,16 +43,19 @@ if ("serviceWorker" in navigator) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  await isUserAuthenticated();
+
   const books = [];
 
   const bookList = document.getElementById("book-list");
-  const bookForm = document.getElementById("book-form");
+  const bookFormSection = document.getElementById("book-form");
+  const bookForm = document.getElementById("book-management-form");
   const menu = document.getElementById("side-menu");
   const overlay = document.getElementById("menu-overlay");
   const burgerMenu = document.getElementById("burger-menu");
   const closeButton = document.getElementById("close-menu");
   const addBookLink = document.getElementById("add-book-link");
-  const saveBook = document.getElementById("save-book");
+  const singOutLink = document.getElementById("sign-out");
   const closeBookForm = document.getElementById("close-form");
   const deleteBook = document.getElementById("delete-book");
   const bookId = document.getElementById("book-id");
@@ -56,11 +79,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   overlay.addEventListener("click", closeMenu);
 
   // Load Books for the first time
-  try {
-    await getBooksFromFirestore(books);
-  } catch (error) {
-    console.error("Error getting books from Firestore: ", error);
-  }
+  await getBooksFromFirestore(books);
 
   /**
    * Display Books
@@ -69,6 +88,7 @@ document.addEventListener("DOMContentLoaded", async () => {
    */
   function displayBooks() {
     bookList.innerHTML = "";
+
     books.forEach((book) => {
       // Book Article
       const bookCard = document.createElement("article");
@@ -238,13 +258,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       deleteBook.style.display = "none";
     }
 
-    bookForm.classList.add("show");
+    bookFormSection.classList.add("show");
     bookList.classList.add("hide");
   }
 
   // Save Book Button Functionality
-  saveBook.addEventListener("click", async () => {
-    const form = document.getElementById("book-management-form");
+  bookForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const form = event.target;
     if (!form.checkValidity()) {
       form.reportValidity();
       return;
@@ -317,7 +338,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     displayBooks();
-    bookForm.classList.remove("show");
+    bookFormSection.classList.remove("show");
     bookList.classList.remove("hide");
 
     const savedBookCard = document.getElementById(savedBook.id);
@@ -332,7 +353,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Close Form Button Functionality
   closeBookForm.addEventListener("click", () => {
-    bookForm.classList.remove("show");
+    bookFormSection.classList.remove("show");
     bookList.classList.remove("hide");
   });
 
@@ -356,7 +377,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         books.splice(bookIndex, 1);
       }
       displayBooks();
-      bookForm.classList.remove("show");
+      bookFormSection.classList.remove("show");
       bookList.classList.remove("hide");
     }
   });
@@ -366,6 +387,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     event.preventDefault();
     openBookForm();
     closeMenu();
+  });
+
+  singOutLink.addEventListener("click", async (event) => {
+    event.preventDefault();
+    try {
+      await auth.signOut();
+      window.location = "index.html";
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
   });
 
   /**
@@ -427,10 +458,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // First Display of Books on Page Load
   displayBooks();
-});
 
-function sanitizeInput(input) {
-  const div = document.createElement("div");
-  div.textContent = input;
-  return div.innerHTML;
-}
+  /**
+   * Utility function Sanitize Input
+   * Prevents XSS attacks by encoding special characters.
+   * @param {string} input - User input to sanitize
+   * @returns {string} - Sanitized input
+   */
+  function sanitizeInput(input) {
+    const div = document.createElement("div");
+    div.textContent = input;
+    return div.innerHTML;
+  }
+});

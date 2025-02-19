@@ -2,13 +2,17 @@
 import { initializeApp } from "firebase/app";
 import {
   doc,
+  getDoc,
   getDocs,
   addDoc,
   updateDoc,
   deleteDoc,
   collection,
   getFirestore,
+  query,
+  where,
 } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -23,6 +27,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 /**
  * Function to load books from Firestore
@@ -31,7 +36,18 @@ const db = getFirestore(app);
  * @returns nothing
  */
 async function getBooksFromFirestore(books) {
-  var data = await getDocs(collection(db, "codex"));
+  const user = auth.currentUser;
+  if (!user) {
+    console.log("User is not authenticated");
+    return;
+  }
+
+  const booksQuery = query(
+    collection(db, "codex"),
+    where("email", "==", user.email)
+  );
+
+  let data = await getDocs(booksQuery);
 
   data.docs.forEach((doc) => {
     const book = {
@@ -49,6 +65,15 @@ async function getBooksFromFirestore(books) {
  * @returns {string} The ID of the document added to Firestore
  */
 async function addBookToFirestore(book) {
+  const user = auth.currentUser;
+  if (!user) {
+    console.log("User is not authenticated");
+    return;
+  }
+
+  // Add the email to the book object
+  book.email = user.email;
+
   const docRef = await addDoc(collection(db, "codex"), book);
   return docRef.id;
 }
@@ -60,7 +85,20 @@ async function addBookToFirestore(book) {
  * @returns {void}
  */
 async function updateBookInFirestore(book) {
+  const user = auth.currentUser;
+  if (!user) {
+    console.log("User is not authenticated");
+    return;
+  }
+
+  // Get the reference to the book document
   const bookRef = doc(db, "codex", book.id);
+  // Check If Logged In User is the Owner of the Book
+  const bookData = (await getDoc(bookRef)).data();
+  if (bookData.email !== user.email) {
+    console.log("User is not the owner of the book");
+    return;
+  }
   await updateDoc(bookRef, {
     cover: book.cover,
     title: book.title,
@@ -79,7 +117,18 @@ async function updateBookInFirestore(book) {
  * @returns {void}
  */
 async function removeBookFromFirestore(bookId) {
+  const user = auth.currentUser;
+  if (!user) {
+    console.log("User is not authenticated");
+    return;
+  }
   const bookRef = doc(db, "codex", bookId);
+  // Check If Logged In User is the Owner of the Book
+  const bookData = (await getDoc(bookRef)).data();
+  if (bookData.email !== user.email) {
+    console.log("User is not the owner of the book");
+    return;
+  }
   await deleteDoc(bookRef);
 }
 
@@ -88,4 +137,5 @@ export {
   addBookToFirestore,
   updateBookInFirestore,
   removeBookFromFirestore,
+  auth,
 };

@@ -9,7 +9,7 @@
     "dev:build": "parcel build --dist-dir dist --no-content-hash assets/html/*.html",
     "dev:run": "npm run dev:build && npm run dev:start",
     "dev:start": "parcel serve --dist-dir dist assets/html/*.html",
-    "lint": "eslint assets/scripts/",
+    "lint": "eslint ./assets/**/*.js",
     "clean": "rmdir /s /q docs"
   },
   "keywords": [],
@@ -40,6 +40,7 @@
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
     "string_decoder": "^1.3.0",
+    "svgo": "^3.3.2",
     "url": "^0.11.4",
     "util": "^0.12.5",
     "vm-browserify": "^1.1.2"
