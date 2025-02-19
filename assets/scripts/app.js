@@ -3,9 +3,29 @@ import {
   addBookToFirestore,
   updateBookInFirestore,
   removeBookFromFirestore,
+  auth,
 } from "./firebase.js";
 
-const sw = new URL("../scripts/service-worker.js", import.meta.url);
+/**
+ * Function to check if a user is authenticated
+ * Redirects to index.html if user is not authenticated
+ * @async
+ */
+function isUserAuthenticated() {
+  return new Promise((resolve, reject) => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        resolve(user);
+      } else {
+        console.log("User is not authenticated");
+        window.location = "index.html";
+        reject("User not authenticated");
+      }
+    });
+  });
+}
+
+const sw = new URL("./service-worker.js", import.meta.url);
 if ("serviceWorker" in navigator) {
   const s = navigator.serviceWorker;
   s.register(sw.href, {
@@ -23,6 +43,8 @@ if ("serviceWorker" in navigator) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  await isUserAuthenticated();
+
   const books = [];
 
   const bookList = document.getElementById("book-list");
@@ -33,7 +55,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const burgerMenu = document.getElementById("burger-menu");
   const closeButton = document.getElementById("close-menu");
   const addBookLink = document.getElementById("add-book-link");
-  const saveBook = document.getElementById("save-book");
+  const singOutLink = document.getElementById("sign-out");
   const closeBookForm = document.getElementById("close-form");
   const deleteBook = document.getElementById("delete-book");
   const bookId = document.getElementById("book-id");
@@ -57,11 +79,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   overlay.addEventListener("click", closeMenu);
 
   // Load Books for the first time
-  try {
-    await getBooksFromFirestore(books);
-  } catch (error) {
-    console.error("Error getting books from Firestore: ", error);
-  }
+  await getBooksFromFirestore(books);
 
   /**
    * Display Books
@@ -70,6 +88,7 @@ document.addEventListener("DOMContentLoaded", async () => {
    */
   function displayBooks() {
     bookList.innerHTML = "";
+
     books.forEach((book) => {
       // Book Article
       const bookCard = document.createElement("article");
@@ -368,6 +387,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     event.preventDefault();
     openBookForm();
     closeMenu();
+  });
+
+  singOutLink.addEventListener("click", async (event) => {
+    event.preventDefault();
+    try {
+      await auth.signOut();
+      window.location = "index.html";
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
   });
 
   /**
