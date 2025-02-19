@@ -86,3 +86,10 @@ header {
 #menu-overlay.show {
   display: block;
 }
+
+.menu-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
