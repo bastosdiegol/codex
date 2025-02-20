@@ -2,7 +2,7 @@ const CACHE_NAME = "codex-pwa-cache-v1";
 const FILES_TO_CACHE = [
   "/codex/",
   "/codex/assets/html/index.html",
-  "/codex/assets/html/codex.html",
+  "/codex/assets/html/app.html",
   "/codex/assets/styles/base.css",
   "/codex/assets/styles/header.css",
   "/codex/assets/styles/main.css",
