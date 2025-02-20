@@ -16,16 +16,7 @@ Codex is integrated with Google Firebase to provide persistence to your data. Ad
 
 - add book <_title (optional)_>
 - close chat
-- ~~order by **option** <_asc|desc (optional)_>~~
-  - ~~title~~
-  - ~~author~~
-  - ~~progress~~
-  - ~~rating~~
 - sign out
-
-_Note: The strikeout rule was removed from the final build for breaking the Parcel build.
-In the development local server, Parcel runs the server fine with this rule.
-The code was kept but in comment form._
 
 You can access **Codex** now by the following link:
 
