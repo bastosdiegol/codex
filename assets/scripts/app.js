@@ -1,20 +1,19 @@
-import { getDoc, doc } from "firebase/firestore";
 import {
   getBooksFromFirestore,
   addBookToFirestore,
   updateBookInFirestore,
   removeBookFromFirestore,
   auth,
-  db,
 } from "./firebase.js";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 
-var apiKey;
-var genAI;
-var model;
-const aiButton = document.getElementById("ai-send-btn");
-const aiInput = document.getElementById("ai-chat-input");
-const chatHistory = document.getElementById("chat-history");
+const books = [];
+
+const bookList = document.getElementById("book-list");
+const bookFormSection = document.getElementById("book-form");
+const bookForm = document.getElementById("book-management-form");
+const closeBookForm = document.getElementById("close-form");
+const deleteBook = document.getElementById("delete-book");
+const bookId = document.getElementById("book-id");
 
 /**
  * Function to check if a user is authenticated
@@ -54,40 +53,6 @@ if ("serviceWorker" in navigator) {
 
 document.addEventListener("DOMContentLoaded", async () => {
   await isUserAuthenticated();
-  getApiKey();
-
-  const books = [];
-
-  const bookList = document.getElementById("book-list");
-  const bookFormSection = document.getElementById("book-form");
-  const bookForm = document.getElementById("book-management-form");
-  const menu = document.getElementById("side-menu");
-  const overlay = document.getElementById("menu-overlay");
-  const burgerMenu = document.getElementById("burger-menu");
-  const closeButton = document.getElementById("close-menu");
-  const addBookLink = document.getElementById("add-book-link");
-  const singOutLink = document.getElementById("sign-out");
-  const closeBookForm = document.getElementById("close-form");
-  const deleteBook = document.getElementById("delete-book");
-  const bookId = document.getElementById("book-id");
-
-  // Burguer Menu Functionality
-  toggleMenuTabIndex(false);
-  function openMenu() {
-    menu.classList.add("open");
-    overlay.classList.add("show");
-    toggleMenuTabIndex(true);
-    trapFocusWithinMenu();
-  }
-  function closeMenu() {
-    menu.classList.remove("open");
-    overlay.classList.remove("show");
-    toggleMenuTabIndex(false);
-  }
-
-  burgerMenu.addEventListener("click", openMenu);
-  closeButton.addEventListener("click", closeMenu);
-  overlay.addEventListener("click", closeMenu);
 
   // Load Books for the first time
   await getBooksFromFirestore(books);
@@ -230,49 +195,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  /**
-   * Open Book Form
-   * Populates form fields with book data when editing
-   * or clears form fields when adding a new book entry.
-   * @param {Object|null} book - Book object to populate form fields
-   * @returns {void}
-   */
-  function openBookForm(book = null) {
-    const formCover = document.getElementById("book-cover");
-    const formId = document.getElementById("book-id");
-    const formTitle = document.getElementById("book-title");
-    const formAuthor = document.getElementById("book-author");
-    const formGenre = document.getElementById("book-genre");
-    const formProgress = document.getElementById("book-progress");
-    const formStatus = document.getElementById("book-status");
-    const formRating = document.getElementById("book-rating");
-
-    if (book) {
-      formCover.value = book.cover;
-      formId.value = book.id;
-      formTitle.value = book.title;
-      formAuthor.value = book.author;
-      formGenre.value = book.genre;
-      formProgress.value = book.progress;
-      formStatus.value = book.status;
-      formRating.value = book.rating;
-      deleteBook.style.display = "inline-block";
-    } else {
-      formCover.value = "";
-      formId.value = "";
-      formTitle.value = "";
-      formAuthor.value = "";
-      formGenre.value = "";
-      formProgress.value = "";
-      formStatus.value = "Not Read";
-      formRating.value = "";
-      deleteBook.style.display = "none";
-    }
-
-    bookFormSection.classList.add("show");
-    bookList.classList.add("hide");
-  }
-
   // Save Book Button Functionality
   bookForm.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -393,154 +315,63 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // Add Book Link Functionality
-  addBookLink.addEventListener("click", (event) => {
-    event.preventDefault();
-    openBookForm();
-    closeMenu();
-  });
-
-  singOutLink.addEventListener("click", async (event) => {
-    event.preventDefault();
-    try {
-      await auth.signOut();
-      window.location = "index.html";
-    } catch (error) {
-      console.error("Error signing out: ", error);
-    }
-  });
-
-  /**
-   * Toggle Menu TabIndex
-   * Adds or removes tabindex attribute to menu links and close button.
-   * @param {boolean} isVisible - Determines if the menu is visible or not
-   * @returns {void}
-   */
-  function toggleMenuTabIndex(isVisible) {
-    const menuLinks = menu.querySelectorAll("nav a");
-    const closeButton = menu.querySelector("#close-menu");
-    menuLinks.forEach((link) => {
-      if (isVisible) {
-        link.setAttribute("tabindex", "0");
-      } else {
-        link.setAttribute("tabindex", "-1");
-      }
-    });
-    if (isVisible) {
-      closeButton.setAttribute("tabindex", "0");
-    } else {
-      closeButton.setAttribute("tabindex", "-1");
-    }
-  }
-
-  /**
-   * Trap Focus Within Menu
-   * Allows for keyboard navigation within the menu.
-   * @returns {void}
-   */
-  function trapFocusWithinMenu() {
-    const menuLinks = menu.querySelectorAll("a");
-    const closeButton = menu.querySelector("#close-menu");
-    const firstLink = menuLinks[0];
-    const lastLink = menuLinks[menuLinks.length - 1];
-
-    menu.addEventListener("keydown", (event) => {
-      if (event.key === "Tab") {
-        if (event.shiftKey) {
-          if (document.activeElement === firstLink) {
-            closeButton.focus();
-            event.preventDefault();
-          } else if (document.activeElement === closeButton) {
-            lastLink.focus();
-            event.preventDefault();
-          }
-        } else {
-          if (document.activeElement === lastLink) {
-            closeButton.focus();
-            event.preventDefault();
-          } else if (document.activeElement === closeButton) {
-            firstLink.focus();
-            event.preventDefault();
-          }
-        }
-      }
-    });
-  }
-
   // First Display of Books on Page Load
   displayBooks();
-
-  /**
-   * Utility function Sanitize Input
-   * Prevents XSS attacks by encoding special characters.
-   * @param {string} input - User input to sanitize
-   * @returns {string} - Sanitized input
-   */
-  function sanitizeInput(input) {
-    const div = document.createElement("div");
-    div.textContent = input;
-    return div.innerHTML;
-  }
-
-  document
-    .getElementById("chatbot-form")
-    .addEventListener("submit", async (event) => {
-      event.preventDefault();
-      let prompt = aiInput.value.trim().toLowerCase();
-
-      if (prompt) {
-        appendMessage("You: " + prompt);
-        aiInput.value = "";
-        if (!ruleChatBot(prompt)) {
-          await askChatBot(prompt);
-        }
-      } else {
-        appendMessage("Please enter a prompt");
-      }
-      chatHistory.scrollTop = chatHistory.scrollHeight;
-    });
-
-  const chatbotContainer = document.getElementById("chatbot-container");
-  const openChatbotBtn = document.getElementById("open-chatbot");
-  const closeChatbotBtn = document.getElementById("close-chatbot");
-
-  chatbotContainer.addEventListener("click", () => {
-    chatbotContainer.classList.toggle("expanded");
-  });
-
-  openChatbotBtn.addEventListener("click", () => {
-    chatbotContainer.style.display = "block";
-    closeMenu();
-    aiInput.focus();
-  });
-
-  closeChatbotBtn.addEventListener("click", () => {
-    console.log("close chatbot");
-
-    chatbotContainer.style.display = "none";
-  });
 });
 
-async function getApiKey() {
-  let snapshot = await getDoc(doc(db, "apikey", "googlegenai"));
-  apiKey = snapshot.data().key;
-  genAI = new GoogleGenerativeAI(apiKey);
-  model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+/**
+ * Open Book Form
+ * Populates form fields with book data when editing
+ * or clears form fields when adding a new book entry.
+ * @param {Object|null} book - Book object to populate form fields
+ * @returns {void}
+ */
+function openBookForm(book = null) {
+  const formCover = document.getElementById("book-cover");
+  const formId = document.getElementById("book-id");
+  const formTitle = document.getElementById("book-title");
+  const formAuthor = document.getElementById("book-author");
+  const formGenre = document.getElementById("book-genre");
+  const formProgress = document.getElementById("book-progress");
+  const formStatus = document.getElementById("book-status");
+  const formRating = document.getElementById("book-rating");
+
+  if (book) {
+    formCover.value = book.cover;
+    formId.value = book.id;
+    formTitle.value = book.title;
+    formAuthor.value = book.author;
+    formGenre.value = book.genre;
+    formProgress.value = book.progress;
+    formStatus.value = book.status;
+    formRating.value = book.rating;
+    deleteBook.style.display = "inline-block";
+  } else {
+    formCover.value = "";
+    formId.value = "";
+    formTitle.value = "";
+    formAuthor.value = "";
+    formGenre.value = "";
+    formProgress.value = "";
+    formStatus.value = "Not Read";
+    formRating.value = "";
+    deleteBook.style.display = "none";
+  }
+
+  bookFormSection.classList.add("show");
+  bookList.classList.add("hide");
 }
 
-function ruleChatBot(request) {
-  return false;
+/**
+ * Utility function Sanitize Input
+ * Prevents XSS attacks by encoding special characters.
+ * @param {string} input - User input to sanitize
+ * @returns {string} - Sanitized input
+ */
+function sanitizeInput(input) {
+  const div = document.createElement("div");
+  div.textContent = input;
+  return div.innerHTML;
 }
 
-async function askChatBot(request) {
-  let result = await model.generateContent(request);
-  appendMessage("ChatBot: " + result.response.text());
-}
-
-function appendMessage(message) {
-  let history = document.createElement("p");
-  history.textContent = message;
-  history.className = "history";
-  chatHistory.appendChild(history);
-  aiInput.value = "";
-}
+export { openBookForm, sanitizeInput };
