@@ -25,11 +25,11 @@ if ("serviceWorker" in navigator) {
     .catch((err) => console.error("Service Worker Error:", err));
 }
 
+const books = [];
+var order = "asc";
+
 // Load Listeners After DOM Content is Loaded
 document.addEventListener("DOMContentLoaded", async () => {
-  const books = [];
-  let order = "asc";
-
   const bookList = document.getElementById("book-list");
   const bookFormSection = document.getElementById("book-form");
   const bookForm = document.getElementById("book-management-form");
@@ -363,3 +363,6 @@ function focusOnBookCard(card) {
     setTimeout(() => card.classList.remove("highlight"), 1000);
   }
 }
+
+export default books;
+export { displayBooks, order };

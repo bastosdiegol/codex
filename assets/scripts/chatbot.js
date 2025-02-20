@@ -2,7 +2,8 @@ import { getDoc, doc } from "firebase/firestore";
 import { db } from "./firebase.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { closeMenu } from "./menu.js";
-import { openBookForm, sanitizeInput } from "./utility.js";
+import { openBookForm, sanitizeInput, orderBooksArrayBy } from "./utility.js";
+import books, { displayBooks } from "./app.js";
 
 const chatbotContainer = document.getElementById("chatbot-container");
 const openChatbotBtn = document.getElementById("open-chatbot");
@@ -64,6 +65,8 @@ async function getApiKey() {
 // Chatbot App Rules
 function ruleChatBot(request) {
   const lowerCaseRequest = request.toLowerCase();
+  console.log(lowerCaseRequest);
+
   // Add Book Rule
   if (lowerCaseRequest.startsWith("add book")) {
     let book = request.slice(8).trim();
@@ -78,6 +81,32 @@ function ruleChatBot(request) {
     // Close Chat Rule
   } else if (lowerCaseRequest.startsWith("close chat")) {
     chatbotContainer.style.display = "none";
+    return true;
+    // Order By Rule
+  } else if (lowerCaseRequest.startsWith("order by")) {
+    let fieldAndOrder = request.slice(8).trim();
+    let field = fieldAndOrder.split(" ")[0];
+    let order = fieldAndOrder.split(" ")[1];
+    // Validate Order
+    if (order === undefined) {
+      order = "asc";
+    }
+    if (order.startsWith("asc") && order.startsWith("desc")) {
+      appendMessage("ChatBot: Please specify an order of 'asc' or 'desc'!");
+      return true;
+    }
+    // Check if Field Exist and is in [title, author, progress, rating]
+    if (field && ["title", "author", "progress", "rating"].includes(field)) {
+      displayBooks(orderBooksArrayBy(books, field, order));
+      order = order.startsWith("asc") ? "ascending" : "descending";
+      appendMessage(
+        "ChatBot: Books ordered by " + field + " in " + order + " order!"
+      );
+    } else {
+      appendMessage(
+        "ChatBot: Please specify a valid field to order by! (title, author, progress or rating)"
+      );
+    }
     return true;
   }
   return false;
