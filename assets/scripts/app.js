@@ -6,34 +6,6 @@ import {
   auth,
 } from "./firebase.js";
 
-const books = [];
-
-const bookList = document.getElementById("book-list");
-const bookFormSection = document.getElementById("book-form");
-const bookForm = document.getElementById("book-management-form");
-const closeBookForm = document.getElementById("close-form");
-const deleteBook = document.getElementById("delete-book");
-const bookId = document.getElementById("book-id");
-
-/**
- * Function to check if a user is authenticated
- * Redirects to index.html if user is not authenticated
- * @async
- */
-function isUserAuthenticated() {
-  return new Promise((resolve, reject) => {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        resolve(user);
-      } else {
-        console.log("User is not authenticated");
-        window.location = "index.html";
-        reject("User not authenticated");
-      }
-    });
-  });
-}
-
 const sw = new URL("./service-worker.js", import.meta.url);
 if ("serviceWorker" in navigator) {
   const s = navigator.serviceWorker;
@@ -51,97 +23,25 @@ if ("serviceWorker" in navigator) {
     .catch((err) => console.error("Service Worker Error:", err));
 }
 
+// Load Listeners After DOM Content is Loaded
 document.addEventListener("DOMContentLoaded", async () => {
+  const books = [];
+
+  const bookList = document.getElementById("book-list");
+  const bookFormSection = document.getElementById("book-form");
+  const bookForm = document.getElementById("book-management-form");
+  const closeBookForm = document.getElementById("close-form");
+  const deleteBook = document.getElementById("delete-book");
+  const bookId = document.getElementById("book-id");
+
+  // Check if user is authenticated
   await isUserAuthenticated();
 
   // Load Books for the first time
   await getBooksFromFirestore(books);
 
-  /**
-   * Display Books
-   * Renders each book as Articles inside Book-List Section.
-   * @returns {void}
-   */
-  function displayBooks() {
-    bookList.innerHTML = "";
-
-    books.forEach((book) => {
-      // Book Article
-      const bookCard = document.createElement("article");
-      bookCard.id = book.id;
-      bookCard.classList.add("book-card");
-      bookCard.setAttribute("aria-labelledby", `book-title-${book.id}`);
-      bookCard.tabIndex = 0;
-
-      // Book image container
-      if (book.cover !== "") {
-        const bookImgDiv = document.createElement("div");
-        bookImgDiv.classList.add("book-img");
-        const bookImg = document.createElement("img");
-        bookImg.src = book.cover;
-        bookImg.alt = `${book.title} Book Cover`;
-        bookImgDiv.appendChild(bookImg);
-        bookCard.appendChild(bookImgDiv);
-      }
-
-      // Book info container
-      const bookInfoDiv = document.createElement("div");
-      bookInfoDiv.classList.add("book-info");
-      const bookTitle = document.createElement("h2");
-      bookTitle.id = `book-title-${book.id}`;
-      bookTitle.textContent = book.title;
-      const bookAuthor = document.createElement("p");
-      bookAuthor.innerHTML = `<strong>Author:</strong> ${book.author}`;
-      const bookGenre = document.createElement("p");
-      bookGenre.innerHTML = `<strong>Genre:</strong> ${book.genre.join(", ")}`;
-      const bookStatus = document.createElement("p");
-      bookStatus.innerHTML = `<strong>Status:</strong> ${book.status}`;
-      const bookProgress = document.createElement("p");
-      bookProgress.innerHTML = `<strong>Progress:</strong> ${book.progress}%`;
-      const bookRatingSpan = document.createElement("span");
-      bookRatingSpan.classList.add("book-rating");
-      bookRatingSpan.setAttribute(
-        "aria-label",
-        `Rating: ${book.rating} out of 5 stars`
-      );
-      bookRatingSpan.innerHTML = renderStars(book.rating);
-
-      // Append all info elements
-      bookInfoDiv.appendChild(bookTitle);
-      bookInfoDiv.appendChild(bookAuthor);
-      bookInfoDiv.appendChild(bookGenre);
-      bookInfoDiv.appendChild(bookStatus);
-      bookInfoDiv.appendChild(bookProgress);
-      // Append info to article
-      bookCard.appendChild(bookInfoDiv);
-      bookCard.appendChild(bookRatingSpan);
-
-      // Append Article to Book List
-      bookList.appendChild(bookCard);
-    });
-  }
-
-  /**
-   * Utility Function that creates a string of stars based on the rating value.
-   * @param {number} rating - Rating value from 1 to 5
-   * @returns {string} - String of stars
-   */
-  function renderStars(rating) {
-    return "&starf;".repeat(rating) + "&star;".repeat(5 - rating);
-  }
-
   // Keyboard Navigation Functionality
   let currentFocus = null;
-
-  // Focus on the currently focused book card
-  function focusOnBookCard(card) {
-    if (card) {
-      card.classList.add("highlight");
-      card.focus();
-      card.scrollIntoView({ behavior: "smooth" });
-      setTimeout(() => card.classList.remove("highlight"), 1000);
-    }
-  }
 
   // Keyboard navigation using arrow keys for book cards
   bookList.addEventListener("keydown", (event) => {
@@ -185,7 +85,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // Book Form Functionality
+  // Book Form Listener
   bookList.addEventListener("click", (event) => {
     const bookCard = event.target.closest(".book-card");
     if (bookCard) {
@@ -195,10 +95,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // Save Book Button Functionality
+  // Save Book Button Listener
   bookForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+
     const form = event.target;
+
     if (!form.checkValidity()) {
       form.reportValidity();
       return;
@@ -270,7 +172,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       savedBook = newBook;
     }
 
-    displayBooks();
+    displayBooks(books);
     bookFormSection.classList.remove("show");
     bookList.classList.remove("hide");
 
@@ -284,13 +186,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // Close Form Button Functionality
+  // Close Form Button Listener
   closeBookForm.addEventListener("click", () => {
     bookFormSection.classList.remove("show");
     bookList.classList.remove("hide");
   });
 
-  // Delete Book Button Functionality
+  // Delete Book Button Listener
   deleteBook.addEventListener("click", function () {
     if (bookId.value === "") return;
     if (
@@ -309,15 +211,34 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         books.splice(bookIndex, 1);
       }
-      displayBooks();
+      displayBooks(books);
       bookFormSection.classList.remove("show");
       bookList.classList.remove("hide");
     }
   });
 
   // First Display of Books on Page Load
-  displayBooks();
+  displayBooks(books);
 });
+
+/**
+ * Function to check if a user is authenticated
+ * Redirects to index.html if user is not authenticated
+ * @async
+ */
+function isUserAuthenticated() {
+  return new Promise((resolve, reject) => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        resolve(user);
+      } else {
+        console.log("User is not authenticated");
+        window.location = "index.html";
+        reject("User not authenticated");
+      }
+    });
+  });
+}
 
 /**
  * Open Book Form
@@ -335,6 +256,9 @@ function openBookForm(book = null, title = null) {
   const formProgress = document.getElementById("book-progress");
   const formStatus = document.getElementById("book-status");
   const formRating = document.getElementById("book-rating");
+  const deleteBook = document.getElementById("delete-book");
+  const bookFormSection = document.getElementById("book-form");
+  const bookList = document.getElementById("book-list");
 
   if (book) {
     formCover.value = book.cover;
@@ -376,6 +300,95 @@ function sanitizeInput(input) {
   const div = document.createElement("div");
   div.textContent = input;
   return div.innerHTML;
+}
+
+/**
+ * Display Books
+ * Renders each book as Articles inside Book-List Section.
+ * @returns {void}
+ */
+function displayBooks(books) {
+  const bookList = document.getElementById("book-list");
+  bookList.innerHTML = "";
+
+  books.forEach((book) => {
+    // Book Article
+    const bookCard = document.createElement("article");
+    bookCard.id = book.id;
+    bookCard.classList.add("book-card");
+    bookCard.setAttribute("aria-labelledby", `book-title-${book.id}`);
+    bookCard.tabIndex = 0;
+
+    // Book image container
+    if (book.cover !== "") {
+      const bookImgDiv = document.createElement("div");
+      bookImgDiv.classList.add("book-img");
+      const bookImg = document.createElement("img");
+      bookImg.src = book.cover;
+      bookImg.alt = `${book.title} Book Cover`;
+      bookImgDiv.appendChild(bookImg);
+      bookCard.appendChild(bookImgDiv);
+    }
+
+    // Book info container
+    const bookInfoDiv = document.createElement("div");
+    bookInfoDiv.classList.add("book-info");
+    const bookTitle = document.createElement("h2");
+    bookTitle.id = `book-title-${book.id}`;
+    bookTitle.textContent = book.title;
+    const bookAuthor = document.createElement("p");
+    bookAuthor.innerHTML = `<strong>Author:</strong> ${book.author}`;
+    const bookGenre = document.createElement("p");
+    bookGenre.innerHTML = `<strong>Genre:</strong> ${book.genre.join(", ")}`;
+    const bookStatus = document.createElement("p");
+    bookStatus.innerHTML = `<strong>Status:</strong> ${book.status}`;
+    const bookProgress = document.createElement("p");
+    bookProgress.innerHTML = `<strong>Progress:</strong> ${book.progress}%`;
+    const bookRatingSpan = document.createElement("span");
+    bookRatingSpan.classList.add("book-rating");
+    bookRatingSpan.setAttribute(
+      "aria-label",
+      `Rating: ${book.rating} out of 5 stars`
+    );
+    bookRatingSpan.innerHTML = renderStars(book.rating);
+
+    // Append all info elements
+    bookInfoDiv.appendChild(bookTitle);
+    bookInfoDiv.appendChild(bookAuthor);
+    bookInfoDiv.appendChild(bookGenre);
+    bookInfoDiv.appendChild(bookStatus);
+    bookInfoDiv.appendChild(bookProgress);
+    // Append info to article
+    bookCard.appendChild(bookInfoDiv);
+    bookCard.appendChild(bookRatingSpan);
+
+    // Append Article to Book List
+    bookList.appendChild(bookCard);
+  });
+}
+
+/**
+ * Utility Function that creates a string of stars based on the rating value.
+ * @param {number} rating - Rating value from 1 to 5
+ * @returns {string} - String of stars
+ */
+function renderStars(rating) {
+  return "&starf;".repeat(rating) + "&star;".repeat(5 - rating);
+}
+
+/**
+ * Utility Function to focus on a book card
+ * Adds a highlight class to the card for 1 second.
+ * @param {HTMLElement} card - Book card to focus on
+ * @returns {void}
+ */
+function focusOnBookCard(card) {
+  if (card) {
+    card.classList.add("highlight");
+    card.focus();
+    card.scrollIntoView({ behavior: "smooth" });
+    setTimeout(() => card.classList.remove("highlight"), 1000);
+  }
 }
 
 export { openBookForm, sanitizeInput };
