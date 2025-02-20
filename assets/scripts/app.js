@@ -1,10 +1,20 @@
+import { getDoc, doc } from "firebase/firestore";
 import {
   getBooksFromFirestore,
   addBookToFirestore,
   updateBookInFirestore,
   removeBookFromFirestore,
   auth,
+  db,
 } from "./firebase.js";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+var apiKey;
+var genAI;
+var model;
+const aiButton = document.getElementById("ai-send-btn");
+const aiInput = document.getElementById("ai-chat-input");
+const chatHistory = document.getElementById("chat-history");
 
 /**
  * Function to check if a user is authenticated
@@ -44,6 +54,7 @@ if ("serviceWorker" in navigator) {
 
 document.addEventListener("DOMContentLoaded", async () => {
   await isUserAuthenticated();
+  getApiKey();
 
   const books = [];
 
@@ -470,4 +481,41 @@ document.addEventListener("DOMContentLoaded", async () => {
     div.textContent = input;
     return div.innerHTML;
   }
+
+  aiButton.addEventListener("click", async () => {
+    let prompt = aiInput.value.trim().toLowerCase();
+
+    if (prompt) {
+      appendMessage("You: " + prompt);
+      if (!ruleChatBot(prompt)) {
+        askChatBot(prompt);
+      }
+    } else {
+      appendMessage("Please enter a prompt");
+    }
+  });
 });
+
+async function getApiKey() {
+  let snapshot = await getDoc(doc(db, "apikey", "googlegenai"));
+  apiKey = snapshot.data().key;
+  genAI = new GoogleGenerativeAI(apiKey);
+  model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+}
+
+function ruleChatBot(request) {
+  return false;
+}
+
+async function askChatBot(request) {
+  let result = await model.generateContent(request);
+  appendMessage("ChatBot: " + result.response.text());
+}
+
+function appendMessage(message) {
+  let history = document.createElement("p");
+  history.textContent = message;
+  history.className = "history";
+  chatHistory.appendChild(history);
+  aiInput.value = "";
+}
