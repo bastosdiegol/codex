@@ -23,10 +23,12 @@ document.addEventListener("DOMContentLoaded", () => {
  * @returns {void}
  */
 function openMenu() {
-  menu.classList.add("open");
-  overlay.classList.add("show");
-  toggleMenuTabIndex(true);
-  trapFocusWithinMenu();
+  if (window.innerWidth < 1024) {
+    menu.classList.add("open");
+    overlay.classList.add("show");
+    toggleMenuTabIndex(true);
+    trapFocusWithinMenu();
+  }
 }
 
 /**
@@ -34,9 +36,11 @@ function openMenu() {
  * @returns {void}
  */
 function closeMenu() {
-  menu.classList.remove("open");
-  overlay.classList.remove("show");
-  toggleMenuTabIndex(false);
+  if (window.innerWidth < 1024) {
+    menu.classList.remove("open");
+    overlay.classList.remove("show");
+    toggleMenuTabIndex(false);
+  }
 }
 
 /**
