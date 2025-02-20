@@ -3,7 +3,7 @@ import { db, auth } from "./firebase.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { closeMenu } from "./menu.js";
 import { openBookForm, sanitizeInput, orderBooksArrayBy } from "./utility.js";
-import books, { displayBooks } from "./app.js";
+import { getBooks, displayBooks } from "./app.js";
 
 const chatbotContainer = document.getElementById("chatbot-container");
 const openChatbotBtn = document.getElementById("open-chatbot");
@@ -97,7 +97,7 @@ function ruleChatBot(request) {
     }
     // Check if Field Exist and is in [title, author, progress, rating]
     if (field && ["title", "author", "progress", "rating"].includes(field)) {
-      displayBooks(orderBooksArrayBy(books, field, order));
+      displayBooks(orderBooksArrayBy(getBooks(), field, order));
       order = order.startsWith("asc") ? "ascending" : "descending";
       appendMessage(
         "ChatBot: Books ordered by " + field + " in " + order + " order!"

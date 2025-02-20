@@ -364,5 +364,12 @@ function focusOnBookCard(card) {
   }
 }
 
-export default books;
-export { displayBooks, order };
+/**
+ * Utility Function to get books array
+ * @returns {Array} - Array of books
+ */
+function getBooks() {
+  return books;
+}
+
+export { getBooks, displayBooks, order };
