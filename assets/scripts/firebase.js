@@ -138,4 +138,5 @@ export {
   updateBookInFirestore,
   removeBookFromFirestore,
   auth,
+  db,
 };
