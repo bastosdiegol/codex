@@ -28,7 +28,7 @@ function signIn() {
       //   const token = credential.accessToken;
       //   const user = result.user;
       //   localStorage.setItem("email", JSON.stringify(user.email));
-      window.location = "codex.html";
+      window.location = "app.html";
     })
     .catch(() => {
       //   const errorCode = error.code;
