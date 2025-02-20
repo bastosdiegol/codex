@@ -21,20 +21,19 @@ if ("serviceWorker" in navigator) {
     .catch((err) => console.error("Service Worker Error:", err));
 }
 
+/**
+ * Sign In with Google
+ * @returns {void}
+ */
 function signIn() {
   signInWithPopup(auth, provider)
     .then(() => {
-      //   const credential = GoogleAuthProvider.credentialFromResult(result);
-      //   const token = credential.accessToken;
-      //   const user = result.user;
-      //   localStorage.setItem("email", JSON.stringify(user.email));
       window.location = "app.html";
+      // Note: sessionStore removed.
+      // I'll be asking firestore if the user is authenticated.
     })
-    .catch(() => {
-      //   const errorCode = error.code;
-      //   const errorMessage = error.message;
-      //   const email = error.customData.email;
-      //   const credential = GoogleAuthProvider.credentialFromError(error);
+    .catch((error) => {
+      console.error("Error signing in: ", error);
     });
 }
 

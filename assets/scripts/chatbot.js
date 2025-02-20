@@ -1,5 +1,5 @@
 import { getDoc, doc } from "firebase/firestore";
-import { db } from "./firebase.js";
+import { db, auth } from "./firebase.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { closeMenu } from "./menu.js";
 import { openBookForm, sanitizeInput, orderBooksArrayBy } from "./utility.js";
@@ -107,6 +107,10 @@ function ruleChatBot(request) {
         "ChatBot: Please specify a valid field to order by! (title, author, progress or rating)"
       );
     }
+    return true;
+  } else if (lowerCaseRequest.startsWith("sign out")) {
+    auth.signOut();
+    window.location = "index.html";
     return true;
   }
   return false;

@@ -21,7 +21,7 @@ Codex is integrated with Google Firebase to provide persistence to your data. Ad
   - author
   - progress
   - rating
-- logout
+- sign out
 
 You can access **Codex** now by the following link:
 

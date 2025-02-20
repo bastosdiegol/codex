@@ -19,7 +19,7 @@ const FILES_TO_CACHE = [
   "/codex/assets/scripts/chatbot.js",
   "/codex/assets/scripts/firebase.js",
   "/codex/assets/scripts/menu.js",
-  "/codex/assets/scripts/sing-in.js",
+  "/codex/assets/scripts/sign-in.js",
   "/codex/assets/scripts/utility.js",
   "/codex/manifest.json",
 ];
