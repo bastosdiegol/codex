@@ -2,8 +2,11 @@ import { getDoc, doc } from "firebase/firestore";
 import { db, auth } from "./firebase.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { closeMenu } from "./menu.js";
-import { openBookForm, sanitizeInput, orderBooksArrayBy } from "./utility.js";
-import { getBooks, displayBooks } from "./app.js";
+import {
+  openBookForm,
+  sanitizeInput /* orderBooksArrayBy */,
+} from "./utility.js";
+// import { getBooks, displayBooks } from "./app.js";
 
 const chatbotContainer = document.getElementById("chatbot-container");
 const openChatbotBtn = document.getElementById("open-chatbot");
@@ -84,30 +87,39 @@ function ruleChatBot(request) {
     return true;
     // Order By Rule
   } else if (lowerCaseRequest.startsWith("order by")) {
-    let fieldAndOrder = request.slice(8).trim();
-    let field = fieldAndOrder.split(" ")[0];
-    let order = fieldAndOrder.split(" ")[1];
-    // Validate Order
-    if (order === undefined) {
-      order = "asc";
-    }
-    if (order.startsWith("asc") && order.startsWith("desc")) {
-      appendMessage("ChatBot: Please specify an order of 'asc' or 'desc'!");
-      return true;
-    }
-    // Check if Field Exist and is in [title, author, progress, rating]
-    if (field && ["title", "author", "progress", "rating"].includes(field)) {
-      displayBooks(orderBooksArrayBy(getBooks(), field, order));
-      order = order.startsWith("asc") ? "ascending" : "descending";
-      appendMessage(
-        "ChatBot: Books ordered by " + field + " in " + order + " order!"
-      );
-    } else {
-      appendMessage(
-        "ChatBot: Please specify a valid field to order by! (title, author, progress or rating)"
-      );
-    }
-    return true;
+    // ** IMPORTANT **
+    // This rule is currently breaking the Parcel Build
+    // It imports two functions from app.js that throws null when building
+    // It works fine in the development local server
+    // let fieldAndOrder = request.slice(8).trim();
+    // let field = fieldAndOrder.split(" ")[0];
+    // let order = fieldAndOrder.split(" ")[1];
+    // // Validate Order
+    // if (!order) {
+    //   order = "asc";
+    // }
+    // if (!order.startsWith("asc") && !order.startsWith("desc")) {
+    //   appendMessage("ChatBot: Please specify an order of 'asc' or 'desc'!");
+    //   return true;
+    // }
+    // // Check if Field Exist and is in [title, author, progress, rating]
+    // if (field && ["title", "author", "progress", "rating"].includes(field)) {
+    //   const books = getBooks();
+    //   if (books.length === 0) {
+    //     appendMessage("ChatBot: No books to order!");
+    //     return true;
+    //   }
+    //   displayBooks(orderBooksArrayBy(books, field, order));
+    //   order = order.startsWith("asc") ? "ascending" : "descending";
+    //   appendMessage(
+    //     "ChatBot: Books ordered by " + field + " in " + order + " order!"
+    //   );
+    // } else {
+    //   appendMessage(
+    //     "ChatBot: Please specify a valid field to order by! (title, author, progress or rating)"
+    //   );
+    // }
+    // return true;
   } else if (lowerCaseRequest.startsWith("sign out")) {
     auth.signOut();
     window.location = "index.html";

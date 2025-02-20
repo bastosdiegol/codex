@@ -369,7 +369,11 @@ function focusOnBookCard(card) {
  * @returns {Array} - Array of books
  */
 function getBooks() {
-  return books;
+  if (books.length === 0) {
+    return [];
+  } else {
+    return books;
+  }
 }
 
 export { getBooks, displayBooks, order };
