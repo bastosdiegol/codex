@@ -1,5 +1,5 @@
 import { auth } from "./firebase.js";
-import { openBookForm } from "./app.js";
+import { openBookForm } from "./utility.js";
 
 const menu = document.getElementById("side-menu");
 const overlay = document.getElementById("menu-overlay");

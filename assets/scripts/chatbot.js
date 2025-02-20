@@ -2,7 +2,7 @@ import { getDoc, doc } from "firebase/firestore";
 import { db } from "./firebase.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { closeMenu } from "./menu.js";
-import { openBookForm, sanitizeInput } from "./app.js";
+import { openBookForm, sanitizeInput } from "./utility.js";
 
 const chatbotContainer = document.getElementById("chatbot-container");
 const openChatbotBtn = document.getElementById("open-chatbot");
@@ -63,7 +63,7 @@ async function getApiKey() {
 
 // Chatbot App Rules
 function ruleChatBot(request) {
-  lowerCaseRequest = request.toLowerCase();
+  const lowerCaseRequest = request.toLowerCase();
   // Add Book Rule
   if (lowerCaseRequest.startsWith("add book")) {
     let book = request.slice(8).trim();

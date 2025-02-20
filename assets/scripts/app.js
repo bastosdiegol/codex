@@ -5,6 +5,8 @@ import {
   removeBookFromFirestore,
   auth,
 } from "./firebase.js";
+import { openBookForm, orderBooksArrayBy, sanitizeInput } from "./utility.js";
+import { closeMenu } from "./menu.js";
 
 const sw = new URL("./service-worker.js", import.meta.url);
 if ("serviceWorker" in navigator) {
@@ -26,6 +28,7 @@ if ("serviceWorker" in navigator) {
 // Load Listeners After DOM Content is Loaded
 document.addEventListener("DOMContentLoaded", async () => {
   const books = [];
+  let order = "asc";
 
   const bookList = document.getElementById("book-list");
   const bookFormSection = document.getElementById("book-form");
@@ -217,8 +220,40 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
+  // Order by Title Button Listener
+  document.getElementById("order-by-title").addEventListener("click", () => {
+    // Toggle order
+    order = order === "asc" ? "desc" : "asc";
+    displayBooks(orderBooksArrayBy(books, "title", order));
+    closeMenu();
+  });
+
+  // Order By Author Button Listener
+  document.getElementById("order-by-author").addEventListener("click", () => {
+    // Toggle order
+    order = order === "asc" ? "desc" : "asc";
+    displayBooks(orderBooksArrayBy(books, "author", order));
+    closeMenu();
+  });
+
+  // Order By Progress Button Listener
+  document.getElementById("order-by-progress").addEventListener("click", () => {
+    // Toggle order
+    order = order === "asc" ? "desc" : "asc";
+    displayBooks(orderBooksArrayBy(books, "progress", order));
+    closeMenu();
+  });
+
+  // Order By Rating Button Listener
+  document.getElementById("order-by-rating").addEventListener("click", () => {
+    // Toggle order
+    order = order === "asc" ? "desc" : "asc";
+    displayBooks(orderBooksArrayBy(books, "rating", order));
+    closeMenu();
+  });
+
   // First Display of Books on Page Load
-  displayBooks(books);
+  displayBooks(orderBooksArrayBy(books, "title", order));
 });
 
 /**
@@ -238,68 +273,6 @@ function isUserAuthenticated() {
       }
     });
   });
-}
-
-/**
- * Open Book Form
- * Populates form fields with book data when editing
- * or clears form fields when adding a new book entry.
- * @param {Object|null} book - Book object to populate form fields
- * @returns {void}
- */
-function openBookForm(book = null, title = null) {
-  const formCover = document.getElementById("book-cover");
-  const formId = document.getElementById("book-id");
-  const formTitle = document.getElementById("book-title");
-  const formAuthor = document.getElementById("book-author");
-  const formGenre = document.getElementById("book-genre");
-  const formProgress = document.getElementById("book-progress");
-  const formStatus = document.getElementById("book-status");
-  const formRating = document.getElementById("book-rating");
-  const deleteBook = document.getElementById("delete-book");
-  const bookFormSection = document.getElementById("book-form");
-  const bookList = document.getElementById("book-list");
-
-  if (book) {
-    formCover.value = book.cover;
-    formId.value = book.id;
-    formTitle.value = book.title;
-    formAuthor.value = book.author;
-    formGenre.value = book.genre;
-    formProgress.value = book.progress;
-    formStatus.value = book.status;
-    formRating.value = book.rating;
-    deleteBook.style.display = "inline-block";
-  } else {
-    formCover.value = "";
-    formId.value = "";
-    if (title) {
-      formTitle.value = title;
-    } else {
-      formTitle.value = "";
-    }
-    formAuthor.value = "";
-    formGenre.value = "";
-    formProgress.value = "";
-    formStatus.value = "Not Read";
-    formRating.value = "";
-    deleteBook.style.display = "none";
-  }
-
-  bookFormSection.classList.add("show");
-  bookList.classList.add("hide");
-}
-
-/**
- * Utility function Sanitize Input
- * Prevents XSS attacks by encoding special characters.
- * @param {string} input - User input to sanitize
- * @returns {string} - Sanitized input
- */
-function sanitizeInput(input) {
-  const div = document.createElement("div");
-  div.textContent = input;
-  return div.innerHTML;
 }
 
 /**
@@ -390,5 +363,3 @@ function focusOnBookCard(card) {
     setTimeout(() => card.classList.remove("highlight"), 1000);
   }
 }
-
-export { openBookForm, sanitizeInput };
