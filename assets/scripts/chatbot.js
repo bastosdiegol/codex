@@ -2,7 +2,7 @@ import { getDoc, doc } from "firebase/firestore";
 import { db } from "./firebase.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { closeMenu } from "./menu.js";
-import { sanitizeInput } from "./app.js";
+import { openBookForm, sanitizeInput } from "./app.js";
 
 const chatbotContainer = document.getElementById("chatbot-container");
 const openChatbotBtn = document.getElementById("open-chatbot");
@@ -25,7 +25,6 @@ document
     // Sanitize and Print User Input
     let prompt = sanitizeInput(aiInput.value.trim());
     appendMessage("You: " + prompt);
-    prompt = prompt.toLowerCase();
     // Check if prompt is empty and for chatbot rules
     if (prompt) {
       aiInput.value = "";
@@ -51,7 +50,6 @@ openChatbotBtn.addEventListener("click", () => {
 });
 
 closeChatbotBtn.addEventListener("click", () => {
-  console.log("close chatbot");
   chatbotContainer.style.display = "none";
 });
 
@@ -65,6 +63,23 @@ async function getApiKey() {
 
 // Chatbot App Rules
 function ruleChatBot(request) {
+  lowerCaseRequest = request.toLowerCase();
+  // Add Book Rule
+  if (lowerCaseRequest.startsWith("add book")) {
+    let book = request.slice(8).trim();
+    if (book) {
+      openBookForm(null, book);
+      appendMessage("ChatBot: Book Form for " + book + " open!");
+    } else {
+      openBookForm();
+      appendMessage("ChatBot: Book Form open!");
+    }
+    return true;
+    // Close Chat Rule
+  } else if (lowerCaseRequest.startsWith("close chat")) {
+    chatbotContainer.style.display = "none";
+    return true;
+  }
   return false;
 }
 

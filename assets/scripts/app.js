@@ -326,7 +326,7 @@ document.addEventListener("DOMContentLoaded", async () => {
  * @param {Object|null} book - Book object to populate form fields
  * @returns {void}
  */
-function openBookForm(book = null) {
+function openBookForm(book = null, title = null) {
   const formCover = document.getElementById("book-cover");
   const formId = document.getElementById("book-id");
   const formTitle = document.getElementById("book-title");
@@ -349,7 +349,11 @@ function openBookForm(book = null) {
   } else {
     formCover.value = "";
     formId.value = "";
-    formTitle.value = "";
+    if (title) {
+      formTitle.value = title;
+    } else {
+      formTitle.value = "";
+    }
     formAuthor.value = "";
     formGenre.value = "";
     formProgress.value = "";
