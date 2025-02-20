@@ -73,6 +73,16 @@
             >
           </li>
           <li>
+            <a href="#" id="open-chatbot"
+              ><img
+                src="../icons/chatbot-icon.svg"
+                alt=""
+                class="menu-icon"
+                aria-hidden="true"
+              />Open AI ChatBot</a
+            >
+          </li>
+          <li>
             <a href="#" id="sign-out"
               ><img
                 src="../icons/logout-icon.svg"
@@ -138,11 +148,18 @@
           </div>
         </form>
       </section>
-      <div id="chatbot-container">
-        <h3>Chat with AI</h3>
-        <div id="chat-history"></div>
-        <input type="text" id="ai-chat-input" />
-        <button id="ai-send-btn">Send</button>
+      <div id="chatbot-container" class="hidden">
+        <form id="chatbot-form" aria-live="polite">
+          <button type="button" id="close-chatbot" aria-label="Close Chatbot">
+            &times;
+          </button>
+          <h3>Chat with AI</h3>
+          <div id="chat-history"></div>
+          <div class="input-container">
+            <input type="text" id="ai-chat-input" />
+            <button type="submit" id="ai-send-btn">Send</button>
+          </div>
+        </form>
       </div>
     </main>
     <footer>

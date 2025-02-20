@@ -131,6 +131,7 @@ main {
 }
 
 #chatbot-container {
+  display: none;
   width: 300px;
   border: 1px solid #ccc;
   padding: 10px;
@@ -138,7 +139,12 @@ main {
   bottom: 40px;
   right: 20px;
   background: white;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+#chatbot-container h3 {
+  border-bottom: #6b5430 1px solid;
+  margin-bottom: 5px;
 }
 
 #chat-history {
@@ -149,17 +155,35 @@ main {
   padding: 5px;
 }
 
-#chat-input {
+#chatbot-container .input-container {
+  display: flex;
+}
+
+#ai-chat-input {
   width: calc(100% - 60px);
   padding: 5px;
   margin-right: 5px;
 }
 
-#send-btn {
+#ai-send-btn {
   padding: 5px 10px;
   cursor: pointer;
 }
 
 .history {
   padding-bottom: 15px;
+}
+
+#close-chatbot {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
 }

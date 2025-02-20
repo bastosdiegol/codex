@@ -482,17 +482,42 @@ document.addEventListener("DOMContentLoaded", async () => {
     return div.innerHTML;
   }
 
-  aiButton.addEventListener("click", async () => {
-    let prompt = aiInput.value.trim().toLowerCase();
+  document
+    .getElementById("chatbot-form")
+    .addEventListener("submit", async (event) => {
+      event.preventDefault();
+      let prompt = aiInput.value.trim().toLowerCase();
 
-    if (prompt) {
-      appendMessage("You: " + prompt);
-      if (!ruleChatBot(prompt)) {
-        askChatBot(prompt);
+      if (prompt) {
+        appendMessage("You: " + prompt);
+        aiInput.value = "";
+        if (!ruleChatBot(prompt)) {
+          await askChatBot(prompt);
+        }
+      } else {
+        appendMessage("Please enter a prompt");
       }
-    } else {
-      appendMessage("Please enter a prompt");
-    }
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+    });
+
+  const chatbotContainer = document.getElementById("chatbot-container");
+  const openChatbotBtn = document.getElementById("open-chatbot");
+  const closeChatbotBtn = document.getElementById("close-chatbot");
+
+  chatbotContainer.addEventListener("click", () => {
+    chatbotContainer.classList.toggle("expanded");
+  });
+
+  openChatbotBtn.addEventListener("click", () => {
+    chatbotContainer.style.display = "block";
+    closeMenu();
+    aiInput.focus();
+  });
+
+  closeChatbotBtn.addEventListener("click", () => {
+    console.log("close chatbot");
+
+    chatbotContainer.style.display = "none";
   });
 });
 
