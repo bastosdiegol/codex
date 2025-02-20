@@ -52,18 +52,15 @@ function closeMenu() {
 function toggleMenuTabIndex(isVisible) {
   const menuLinks = menu.querySelectorAll("nav a");
   const closeButton = menu.querySelector("#close-menu");
+
+  // Only disable tab navigation if the menu is hidden on small screens
+  const shouldDisable = window.innerWidth < 1024 && !isVisible;
+
   menuLinks.forEach((link) => {
-    if (isVisible) {
-      link.setAttribute("tabindex", "0");
-    } else {
-      link.setAttribute("tabindex", "-1");
-    }
+    link.setAttribute("tabindex", shouldDisable ? "-1" : "0");
   });
-  if (isVisible) {
-    closeButton.setAttribute("tabindex", "0");
-  } else {
-    closeButton.setAttribute("tabindex", "-1");
-  }
+
+  closeButton.setAttribute("tabindex", shouldDisable ? "-1" : "0");
 }
 
 /**
@@ -115,6 +112,15 @@ singOutLink.addEventListener("click", async (event) => {
     window.location = "index.html";
   } catch (error) {
     console.error("Error signing out: ", error);
+  }
+});
+
+// Handle Menu on Window Resize
+window.addEventListener("resize", () => {
+  if (window.innerWidth >= 1024) {
+    toggleMenuTabIndex(true);
+  } else {
+    toggleMenuTabIndex(menu.classList.contains("open"));
   }
 });
 
