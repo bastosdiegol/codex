@@ -6,13 +6,22 @@
     <title>Codex - Book Management PWA</title>
     <link rel="icon" type="image/png" href="../icons/favicon.png" />
     <link rel="manifest" href="../../manifest.json" />
+    <!-- Styles -->
     <link rel="stylesheet" href="../styles/base.css" />
     <link rel="stylesheet" href="../styles/header.css" />
     <link rel="stylesheet" href="../styles/main.css" />
     <link rel="stylesheet" href="../styles/footer.css" />
     <link rel="stylesheet" href="../styles/media-queries.css" />
+    <!-- Scripts -->
     <script type="module" src="../scripts/firebase.js"></script>
     <script type="module" src="../scripts/sign-in.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <header>
@@ -20,7 +29,17 @@
       <h1>Codex</h1>
     </header>
     <main class="sing-in-container">
-      <button id="sign-in">Sign In</button>
+      <h2>Welcome to Codex!</h2>
+      <h3>Your online app to track what you read.</h3>
+      <p>Sign in to start managing your books.</p>
+      <button id="sign-in">
+        <img
+          src="../icons/google-icon.svg"
+          alt=""
+          class="menu-icon google-icon"
+          aria-hidden="true"
+        />Sign In with Google
+      </button>
     </main>
     <footer>
       <p>

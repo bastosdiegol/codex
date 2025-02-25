@@ -93,3 +93,7 @@ header {
   margin-right: 8px;
   vertical-align: middle;
 }
+
+.google-icon {
+  filter: unset !important;
+}

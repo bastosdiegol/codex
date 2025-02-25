@@ -1,4 +1,4 @@
-const CACHE_NAME = "codex-pwa-cache-v1";
+const CACHE_NAME = "codex-pwa-cache-v1.1";
 const FILES_TO_CACHE = [
   "/codex/",
   "/codex/assets/html/index.html",
@@ -11,6 +11,7 @@ const FILES_TO_CACHE = [
   "/codex/assets/icons/add-book-icon.png",
   "/codex/assets/icons/chatbot-icon.png",
   "/codex/assets/icons/favicon.png",
+  "/codex/assets/icons/google-icon.png",
   "/codex/assets/icons/logout-icon.png",
   "/codex/assets/icons/sort-icon.png",
   "/codex/assets/images/codex.png",

@@ -346,7 +346,7 @@ function displayBooks(books) {
  * @returns {string} - String of stars
  */
 function renderStars(rating) {
-  return "&starf;".repeat(rating) + "&star;".repeat(5 - rating);
+  return "&starf;".repeat(rating);
 }
 
 /**
