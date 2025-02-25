@@ -30,6 +30,11 @@
       "src": "./assets/icons/logout-icon.svg",
       "sizes": "any",
       "type": "image/svg+xml"
+    },
+    {
+      "src": "./assets/icons/google-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
     }
   ]
 }
