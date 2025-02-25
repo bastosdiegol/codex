@@ -1,4 +1,4 @@
-const CACHE_NAME = "codex-pwa-cache-v1.1";
+const CACHE_NAME = "codex-pwa-cache-v2";
 const FILES_TO_CACHE = [
   "/codex/",
   "/codex/assets/html/index.html",
