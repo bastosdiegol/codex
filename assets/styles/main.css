@@ -191,3 +191,33 @@ main {
 .hidden {
   display: none;
 }
+
+.no-books-area {
+  display: none;
+  flex-direction: column;
+  gap: 20px;
+  justify-self: center;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.add-first-book {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  background-color: #7f6639;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.no-books-area.hide {
+  display: none;
+}
+
+.no-books-area.show {
+  display: flex;
+}

@@ -252,6 +252,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     closeMenu();
   });
 
+  // Add Book Button Listener (No Books)
+  document.getElementById("add-first-book").addEventListener("click", () => {
+    const noBooksArea = document.getElementById("no-books");
+    noBooksArea.classList.remove("show");
+    noBooksArea.classList.add("hide");
+    openBookForm();
+  });
+
   // First Display of Books on Page Load
   displayBooks(orderBooksArrayBy(books, "title", order));
 });
@@ -282,7 +290,18 @@ function isUserAuthenticated() {
  */
 function displayBooks(books) {
   const bookList = document.getElementById("book-list");
+  const noBooksArea = document.getElementById("no-books");
   bookList.innerHTML = "";
+
+  // Check if books array is empty
+  if (books.length === 0) {
+    noBooksArea.classList.add("show");
+    noBooksArea.classList.remove("hide");
+    return;
+  } else {
+    noBooksArea.classList.remove("show");
+    noBooksArea.classList.add("hide");
+  }
 
   books.forEach((book) => {
     // Book Article
